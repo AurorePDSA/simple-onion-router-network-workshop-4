@@ -2,11 +2,12 @@ import bodyParser from "body-parser";
 import express, { Request, Response } from "express";
 import { REGISTRY_PORT } from "../config";
 
-export type Node = { nodeId: number; pubKey: string };
+export type Node = { nodeId: number; pubKey: string; privateKey: string };
 
 export type RegisterNodeBody = {
   nodeId: number;
   pubKey: string;
+  privateKey: string;
 };
 
 export type GetNodeRegistryBody = {
@@ -14,16 +15,34 @@ export type GetNodeRegistryBody = {
 };
 
 export async function launchRegistry() {
+  let nodes: Node[] = []; 
   const _registry = express();
   _registry.use(express.json());
   _registry.use(bodyParser.json());
 
-  // TODO implement the status route
-  // _registry.get("/status", (req, res) => {});
+  _registry.get("/status", (req, res) => {
+    res.send('live');
+  });
+
+ 
+  _registry.post("/registerNode", (req: Request, res: Response) => {
+    const newNode: Node = req.body as Node;
+    if (newNode) {
+      nodes.push(newNode);
+      res.status(201).send();
+    } else {
+      res.status(500).send();
+    }
+  });
+
+  _registry.get("/getNodeRegistry", (req, res) => {
+    res.json({nodes});
+  });
 
   const server = _registry.listen(REGISTRY_PORT, () => {
     console.log(`registry is listening on port ${REGISTRY_PORT}`);
   });
+  
 
   return server;
 }

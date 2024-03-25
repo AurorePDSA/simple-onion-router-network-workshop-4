@@ -21,6 +21,7 @@ import {
   symEncrypt,
 } from "../../src/crypto";
 const { validateEncryption } = require("./utils");
+import { log } from "console";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -489,6 +490,7 @@ describe("Onion Routing", () => {
     });
 
     it("Can export and import a symmetric key - 0.5pt", async () => {
+      
       const symKey = await createRandomSymmetricKey();
 
       const strSymKey = await exportSymKey(symKey);
